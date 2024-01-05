@@ -1,0 +1,32 @@
+version: '3.4'
+
+networks:
+  backend:
+
+services:
+  blogapi:
+    container_name: blog-api
+    image: ${DOCKER_REGISTRY-}blogapi
+    ports: 
+      - "18004:80"
+    build:
+      context: .
+      dockerfile: BlogAPI/Dockerfile
+    environment:
+      - DB_HOST=blogdb
+      - DB_NAME=blog
+      - DB_SA_PASSWORD=password1!
+    networks:
+      - backend
+
+  blogdb:
+    container_name: blog-db
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=password1!
+    ports:
+      - '18006:1433'
+    restart: always
+    networks:
+      - backend
