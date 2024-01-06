@@ -22,7 +22,7 @@ jobs:
     - name: Build
       run: dotnet build BlogAPI/BlogAPI.csproj --no-restore
     - name: Test
-      run: dotnet test BlogAPI/BlogAPI.csproj --no-build --verbosity normal
+      run: dotnet test ./BlogAPI.sln --configuration Release
 
     - name: Docker Build & Push Action
       uses: mr-smithers-excellent/docker-build-push@v6.2
