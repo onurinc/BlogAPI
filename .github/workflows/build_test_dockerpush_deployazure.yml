@@ -1,4 +1,4 @@
-name: BlogAPI, build - test - dockerpush workflow
+name: BlogAPI, build - test - dockerpush, deploy azure workflow
 
 on:
   push:
@@ -28,8 +28,19 @@ jobs:
       uses: mr-smithers-excellent/docker-build-push@v6.2
       with:
         image: onurinc/blogapi
-        tags: v1, latest
+        tags: v1, latest, ${{ github.sha }}
         registry: docker.io
         dockerfile: BlogAPI/Dockerfile
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+        # Deploy docker hub image to azure with publish auth
+      - name: deploy to azure
+        uses: azure/webapps-deploy@v2
+        with:
+            app-name: 'ITBlogAPI'
+            publish-profile: ${{ secrets.AZURE_APPSERVICE_PUBLISHPROFILE }}
+            images: 'index.docker.io/${{ secrets.DOCKER_USERNAME }}/blogapi:${{ github.sha }}'       
