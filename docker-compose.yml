@@ -10,7 +10,7 @@ services:
     depends_on:
       - "blogdb"
     ports: 
-      - "8088:80"
+      - "18004:80"
     build:
       context: .
       dockerfile: BlogAPI/Dockerfile
