@@ -7,26 +7,28 @@ services:
   blogapi:
     container_name: blog-api
     image: ${DOCKER_REGISTRY-}blogapi
+    depends_on:
+      - "blogdb"
     ports: 
-      - "18004:80"
+      - "8088:80"
     build:
       context: .
       dockerfile: BlogAPI/Dockerfile
     environment:
-      - DB_HOST=blogdb
-      - DB_NAME=blog
-      - DB_SA_PASSWORD=password1!
+      - ConnectionStrings__DefaultConnection=User ID=postgres;Password=postgres;Server=blogdb;Port=5432;Database=ITBlogDb; IntegratedSecurity=true;Pooling=true;
+      - ASPNETCORE_URLS=http://+:80
     networks:
       - backend
 
   blogdb:
     container_name: blog-db
-    image: mcr.microsoft.com/mssql/server:2019-latest
+    image: postgres:latest
     environment:
-      - ACCEPT_EULA=Y
-      - SA_PASSWORD=password1!
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=ITBlogDb
     ports:
-      - '18006:1433'
+      - "5433:5432"
     restart: always
     networks:
       - backend
