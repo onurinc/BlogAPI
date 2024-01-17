@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using BlogAPI.Core;
 using BlogAPI.Models;
+using BlogAPI.Services;
 
 namespace BlogAPI.Controllers
 {
@@ -10,10 +11,14 @@ namespace BlogAPI.Controllers
     {
 
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMessageProducer _messageProducer;
 
-        public BlogsController(IUnitOfWork unitOfWork)
+        public BlogsController(
+            IUnitOfWork unitOfWork, 
+            IMessageProducer messageProducer)
         {
             _unitOfWork = unitOfWork;
+            _messageProducer = messageProducer;
         }
 
         [HttpGet]
@@ -36,8 +41,12 @@ namespace BlogAPI.Controllers
         {
             _unitOfWork.Blogs.Add(blog);
             await _unitOfWork.CompleteAsync();
+
+            //_messageProducer.SendingMessage<Blog>(blog);
+
             return Ok();
         }
+
 
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteBlog(int id)
